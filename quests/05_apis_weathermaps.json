@@ -1,0 +1,295 @@
+{
+  "name": "05_apis_weathermaps",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "도시 정보 입력",
+        "formDescription": "입력한 도시의 날씨 정보 제공",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "도시 이름",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -480,
+        240
+      ],
+      "id": "dccad56e-29e8-4eb2-9e26-fc1e12c70723",
+      "name": "On form submission",
+      "webhookId": "2f6046d7-8381-4db3-8ed2-eb22e323097b"
+    },
+    {
+      "parameters": {
+        "url": "https://api.openweathermap.org/data/2.5/weather",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -288,
+        240
+      ],
+      "id": "b1423ca4-adb9-4a3a-8340-a6b52f8b6787",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "url": "http://api.openweathermap.org/geo/1.0/direct",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $json['도시 이름'] }}"
+            },
+            {
+              "name": "limit",
+              "value": "5"
+            },
+            {
+              "name": "appid",
+              "value": "5e66ef609c5400af970b6df12861b597"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -288,
+        240
+      ],
+      "id": "eb5ea5e7-eec4-4570-8a1d-8cd4ecee2299",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "url": "https://api.openweathermap.org/data/2.5/weather",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "lat",
+              "value": "={{ $json.lat }}"
+            },
+            {
+              "name": "lon",
+              "value": "={{ $json.lon }}"
+            },
+            {
+              "name": "appid",
+              "value": "5e66ef609c5400af970b6df12861b597"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -32,
+        240
+      ],
+      "id": "6af3a38e-a6b4-49cd-9f6f-0105ae43ca21",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "url": "http://api.openweathermap.org/data/2.5/forecast",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "lat",
+              "value": "={{ $json.coord.lat }}"
+            },
+            {
+              "name": "lon",
+              "value": "={{ $json.coord.lon }}"
+            },
+            {
+              "name": "appid",
+              "value": "5e66ef609c5400af970b6df12861b597"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        224,
+        240
+      ],
+      "id": "d5e3b2e6-71a1-4d96-916e-670b325e2613",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1hajvBeP7KXSfWvFB0U-ysUUoFhxfxv5bt2cvo8f4S3A/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "시트1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hajvBeP7KXSfWvFB0U-ysUUoFhxfxv5bt2cvo8f4S3A/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "도시명": "={{ $('On form submission').item.json['도시 이름'] }}",
+            "좌표": "={{ $('HTTP Request1').item.json.lat }},{{ $('HTTP Request1').item.json.lon }}",
+            "확인일시": "={{ $('On form submission').item.json.submittedAt }}",
+            "CurrentForecast": "={{ $('HTTP Request').item.json.main }}",
+            "DailyForecast": "={{ $json.list }}"
+          },
+          "matchingColumns": [
+            "좌표"
+          ],
+          "schema": [
+            {
+              "id": "도시명",
+              "displayName": "도시명",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "좌표",
+              "displayName": "좌표",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "확인일시",
+              "displayName": "확인일시",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CurrentForecast",
+              "displayName": "CurrentForecast",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "DailyForecast",
+              "displayName": "DailyForecast",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        576,
+        240
+      ],
+      "id": "587c03c1-253f-43be-934d-5eb7d453edd2",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Eu9sNT9Zp5LY4Uep",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3ef1fe63-1e4b-4756-a0c2-5e029ed3c833",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b74b7125cc0d8c1aab64517b4f5f232d2883dcec2283a83836fa5dfd0e990b85"
+  },
+  "id": "gHFH90fkLCrRE2pD",
+  "tags": []
+}
