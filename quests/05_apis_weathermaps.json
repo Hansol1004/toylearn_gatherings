@@ -27,11 +27,22 @@
     },
     {
       "parameters": {
-        "url": "https://api.openweathermap.org/data/2.5/weather",
+        "url": "http://api.openweathermap.org/geo/1.0/direct",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
-            {}
+            {
+              "name": "q",
+              "value": "={{ $json['도시 이름'] }}"
+            },
+            {
+              "name": "limit",
+              "value": "1"
+            },
+            {
+              "name": "appid",
+              "value": "5e66ef609c5400af970b6df12861b597"
+            }
           ]
         },
         "options": {}
@@ -101,7 +112,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        -32,
+        128,
         240
       ],
       "id": "6af3a38e-a6b4-49cd-9f6f-0105ae43ca21",
@@ -132,7 +143,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        224,
+        336,
         240
       ],
       "id": "d5e3b2e6-71a1-4d96-916e-670b325e2613",
@@ -221,7 +232,7 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        576,
+        528,
         240
       ],
       "id": "587c03c1-253f-43be-934d-5eb7d453edd2",
@@ -232,6 +243,17 @@
           "name": "Google Sheets account"
         }
       }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        240
+      ],
+      "id": "1610e19e-ca08-48a0-a292-eec20299fe3b",
+      "name": "Limit"
     }
   ],
   "pinData": {},
@@ -251,7 +273,7 @@
       "main": [
         [
           {
-            "node": "HTTP Request",
+            "node": "Limit",
             "type": "main",
             "index": 0
           }
@@ -279,13 +301,24 @@
           }
         ]
       ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "3ef1fe63-1e4b-4756-a0c2-5e029ed3c833",
+  "versionId": "7b520896-0777-4ad8-b8a6-6016395ba20a",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b74b7125cc0d8c1aab64517b4f5f232d2883dcec2283a83836fa5dfd0e990b85"
